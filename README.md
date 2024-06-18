@@ -1,11 +1,27 @@
 ## Usings
 
-- Node JS v20.10.0
+- NodeJS v20.10.0
+- PostgreSQL
+- Prisma ORM
 
 ## Installation
 
 ```bash
 $ npm install
+```
+
+## Setting & Configuration
+
+Need to create and configure .env file
+
+_Possible enviroments:_
+
+```bash
+# development file
+.development.env
+
+# production file
+.production.env
 ```
 
 ## Running the app
@@ -19,17 +35,4 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
-```
-
-## Test
-
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
 ```

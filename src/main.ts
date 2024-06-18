@@ -5,6 +5,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 async function bootstrap() {
   const port = process.env.PORT || 3000;
   const app = await NestFactory.create(AppModule);
+  app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
     .setTitle('To-Do REST API')
@@ -16,7 +17,7 @@ async function bootstrap() {
   SwaggerModule.setup('/api/docs', app, document);
 
   await app.listen(port, () => {
-    console.log('Server is running at ' + port);
+    console.log(`Server is running at ${port} in ${process.env.NODE_ENV} mode`);
   });
 }
 bootstrap();
