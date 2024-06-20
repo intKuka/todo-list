@@ -1,4 +1,5 @@
 import {
+  ConflictException,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -7,6 +8,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { SignUpDto } from './dto/sign-up.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +17,29 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  // TODO: validate params
+  async signup({ email, password }: SignUpDto) {
+    const isExists = await this.prisma.user.findUnique({
+      where: {
+        email: email,
+      },
+    });
+    if (isExists) {
+      throw new ConflictException(`Email ${email} is already taken`);
+    }
+    const hash = await bcrypt.hash(password, 7);
+    const user = await this.prisma.user.create({
+      data: {
+        email: email,
+        password: hash,
+      },
+    });
+    const payload = {
+      id: user.id,
+      email: user.email,
+    };
+    return { access_token: await this.jwtService.signAsync(payload) };
+  }
+
   async signin({ email, password }: SignInDto) {
     const user = await this.prisma.user.findFirst({
       where: {
