@@ -1,17 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import * as bcrypt from 'bcrypt';
-import { GeteUserDto } from './dto/get-user.dto';
-import { Prisma } from '@prisma/client';
+import { UserDto } from './dto/user.dto';
+import { CreateUserDto } from './dto/create-user.dto';
 
 @Injectable()
 export class UsersService {
   constructor(private prisma: PrismaService) {}
 
-  async createUser(data: Prisma.UserCreateInput) {
-    // TODO: use transform
-    const password = data.password;
+  async createUser(data: CreateUserDto) {
+    const { password } = data;
     const hash = await bcrypt.hash(password, 7);
     data.password = hash;
 
@@ -19,14 +17,12 @@ export class UsersService {
       data: data,
     });
 
-    // TODO: use interceptor
-    const dto = new GeteUserDto();
-    dto.id = user.id;
-    dto.email = user.email;
-    return dto;
+    return new UserDto(user);
   }
 
   async fintAllUsers() {
-    return await this.prisma.user.findMany();
+    return await this.prisma.user
+      .findMany()
+      .then((users) => users.map((user) => new UserDto(user)));
   }
 }

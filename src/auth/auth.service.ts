@@ -31,11 +31,11 @@ export class AuthService {
     if (!isMatch) {
       throw new UnauthorizedException('User is unauthorized');
     }
+
     const payload = {
       id: user.id,
       email: user.email,
     };
-
     return { access_token: await this.jwtService.signAsync(payload) };
   }
 }
