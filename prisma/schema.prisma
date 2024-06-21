@@ -14,19 +14,28 @@ datasource db {
 }
 
 model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique @db.VarChar()
-  password  String   @db.VarChar()
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  id        Int       @id @default(autoincrement())
+  email     String    @unique @db.VarChar()
+  password  String    @db.VarChar()
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  Project   Project[]
+
+  @@index([id])
+  @@index([email])
+  @@map("users")
 }
 
-// model Project {
-//   id          Int      @id @default(autoincrement())
-//   title       String   @db.VarChar(50)
-//   description String?  @db.VarChar(200)
-//   userId      Int      @map("user_id")
-//   user        User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
-//   createdAt   DateTime @default(now()) @map("created_at")
-//   updatedAt   DateTime @updatedAt @map("updated_at")
-// }
+model Project {
+  title       String   @db.VarChar(50)
+  slug        String   @db.VarChar(50)
+  description String?  @db.VarChar(200)
+  userId      Int      @map("user_id")
+  user        User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@id([slug, userId])
+  @@index([slug, userId])
+  @@map("projects")
+}

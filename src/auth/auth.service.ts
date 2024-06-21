@@ -9,7 +9,9 @@ import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
+import { UserMetadata } from 'src/common/types';
 
+//TODO: move exception message to constans
 @Injectable()
 export class AuthService {
   constructor(
@@ -33,7 +35,7 @@ export class AuthService {
         password: hash,
       },
     });
-    const payload = {
+    const payload: UserMetadata = {
       id: user.id,
       email: user.email,
     };

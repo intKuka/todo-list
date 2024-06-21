@@ -10,9 +10,10 @@ import {
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 
+@ApiBearerAuth()
 @ApiTags('Users')
 @UseGuards(AuthGuard)
 @UseInterceptors(ClassSerializerInterceptor)
