@@ -18,6 +18,7 @@ export class AllExceptionFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const request = host.switchToHttp().getRequest<Request>();
     const response = host.switchToHttp().getResponse<Response>();
+    let throwAfterResponse = false;
 
     let httpStatus: HttpStatus;
     let errorMessage: string;
@@ -26,6 +27,7 @@ export class AllExceptionFilter implements ExceptionFilter {
       errorMessage = exception.message;
       httpStatus = exception.getStatus();
     } else {
+      throwAfterResponse = true;
       errorMessage = 'Something went wrong';
       httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
     }
@@ -38,6 +40,8 @@ export class AllExceptionFilter implements ExceptionFilter {
     const errorLog = this.getErrorLog(customErrorResponse, request, exception);
     console.error(errorLog);
     response.status(httpStatus).json(customErrorResponse);
+
+    if (throwAfterResponse) throw exception;
   }
 
   private getErrorResponse = (
