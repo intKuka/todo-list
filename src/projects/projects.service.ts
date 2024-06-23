@@ -8,21 +8,19 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import projectErrorMessages from './constants/errors.constants';
-
-type Slug_UserId = { slug: string; userId: number };
+import { ProjectId } from 'src/common/types';
 
 @Injectable()
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
-  async createProjectForUser(userId: number, data: CreateProjectDto) {
-    if ((await this.isExists({ userId: userId, slug: data.slug })) === true) {
-      throw new ConflictException(projectErrorMessages.CONFLICT);
-    }
+  async createProjectForUser(id: ProjectId, data: CreateProjectDto) {
+    await this.notExistsOrThrow(id);
 
     const project = await this.prisma.project.create({
       data: {
-        userId: userId,
+        userId: id.userId,
+        slug: id.slug,
         ...data,
       },
       include: {
@@ -46,10 +44,10 @@ export class ProjectsService {
       .then((projects) => projects.map((project) => new ProjectDto(project)));
   }
 
-  async findProjectOfUserByTitle(slug_userId: Slug_UserId) {
+  async findProjectOfUserByTitle(id: ProjectId) {
     const project = await this.prisma.project.findUnique({
       where: {
-        slug_userId: slug_userId,
+        slug_userId: id,
       },
       include: {
         user: true,
@@ -62,40 +60,42 @@ export class ProjectsService {
     return new ProjectDto(project);
   }
 
-  async updateProjectOfUserByTitle(
-    slug_userId: Slug_UserId,
-    data: UpdateProjectDto,
-  ) {
-    if ((await this.isExists(slug_userId)) === false) {
-      throw new NotFoundException(projectErrorMessages.NOT_FOUND);
-    }
+  async updateProjectOfUserByTitle(id: ProjectId, data: UpdateProjectDto) {
+    await this.existsOrThrow(id);
 
     await this.prisma.project.update({
       where: {
-        slug_userId: slug_userId,
+        slug_userId: id,
       },
       data: data,
     });
   }
 
-  async deleteProjectOfUserByTitle(slug_userId: Slug_UserId) {
-    if ((await this.isExists(slug_userId)) === false) {
-      throw new NotFoundException(projectErrorMessages.NOT_FOUND);
-    }
+  async deleteProjectOfUserByTitle(id: ProjectId) {
+    await this.existsOrThrow(id);
 
     await this.prisma.project.delete({
       where: {
-        slug_userId: slug_userId,
+        slug_userId: id,
       },
     });
   }
 
-  private async isExists(slug_userId: Slug_UserId): Promise<boolean> {
+  private async existsOrThrow(id: ProjectId): Promise<void> {
     const project = await this.prisma.project.findUnique({
       where: {
-        slug_userId: slug_userId,
+        slug_userId: id,
       },
     });
-    return Boolean(project);
+    if (!project) throw new NotFoundException(projectErrorMessages.NOT_FOUND);
+  }
+
+  private async notExistsOrThrow(projectId: ProjectId): Promise<void> {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        slug_userId: projectId,
+      },
+    });
+    if (project) throw new ConflictException(projectErrorMessages.CONFLICT);
   }
 }

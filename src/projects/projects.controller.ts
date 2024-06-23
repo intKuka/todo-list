@@ -14,11 +14,11 @@ import { AuthGuard } from 'src/auth/jwt-auth.guard';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
-import { GetSlugFromParam } from 'src/common/pipes/get-slug-from-param.pipe';
 import { AssignSlugInBody } from 'src/common/pipes/assign-slug-to-body.pipe';
 import { GetUserMetadata } from 'src/common/decorators/get-user-metadata.decorator';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { ProjectDto } from './dto/project.dto';
+import { GetSlug } from 'src/common/pipes/get-slug.pipe';
 
 @ApiBearerAuth()
 @ApiTags('Projects')
@@ -31,11 +31,13 @@ export class ProjectsController {
   @Post()
   async createUserProject(
     @GetUserMetadata('id') userId: number,
-    @Body(new AssignSlugInBody('title'))
-    dto: CreateProjectDto,
+    @Body('title', GetSlug) slug: string,
+    @Body() dto: CreateProjectDto,
   ): Promise<ProjectDto> {
-    dto.userId = userId;
-    const result = await this.projects.createProjectForUser(userId, dto);
+    const result = await this.projects.createProjectForUser(
+      { slug, userId },
+      dto,
+    );
     return result;
   }
 
@@ -52,7 +54,7 @@ export class ProjectsController {
   @Get(':title')
   async findUserProjectByTitle(
     @GetUserMetadata('id') userId: number,
-    @Param('title', GetSlugFromParam) slug: string,
+    @Param('title', GetSlug) slug: string,
   ): Promise<ProjectDto> {
     const result = await this.projects.findProjectOfUserByTitle({
       slug,
@@ -65,7 +67,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateUserProjectByTitle(
     @GetUserMetadata('id') userId: number,
-    @Param('title', GetSlugFromParam) slug: string,
+    @Param('title', GetSlug) slug: string,
     @Body(new AssignSlugInBody('title')) dto: UpdateProjectDto,
   ): Promise<void> {
     const result = await this.projects.updateProjectOfUserByTitle(
@@ -79,7 +81,7 @@ export class ProjectsController {
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUserProjectByTitle(
     @GetUserMetadata('id') userId: number,
-    @Param('title', GetSlugFromParam) slug: string,
+    @Param('title', GetSlug) slug: string,
   ) {
     const result = await this.projects.deleteProjectOfUserByTitle({
       slug,
