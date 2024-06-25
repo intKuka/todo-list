@@ -2,8 +2,8 @@ import { PipeTransform, Injectable, ArgumentMetadata } from '@nestjs/common';
 import { stringToSlug } from '../helpers/work-with-slug.helper';
 
 @Injectable()
-export class GetSlug<T extends string> implements PipeTransform {
-  transform(value: T, metadata: ArgumentMetadata) {
+export class GetSlug implements PipeTransform {
+  transform(value: string, metadata: ArgumentMetadata) {
     switch (metadata.type) {
       case 'param':
       case 'body':

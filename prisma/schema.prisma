@@ -19,7 +19,7 @@ model User {
   password  String    @db.VarChar()
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
-  Project   Project[]
+  projects  Project[]
 
   @@index([id])
   @@index([email])
@@ -29,13 +29,27 @@ model User {
 model Project {
   title       String   @db.VarChar(50)
   slug        String   @db.VarChar(50)
-  description String?  @db.VarChar(200)
   userId      Int      @map("user_id")
+  description String?  @db.VarChar(200)
   user        User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
+  columns     Column[]
 
   @@id([slug, userId])
   @@index([slug, userId])
   @@map("projects")
+}
+
+model Column {
+  slug        String  @db.VarChar(50)
+  projectSlug String  @map("project_slug") @db.VarChar(50)
+  userId      Int     @map("user_id")
+  label       String  @db.VarChar(50)
+  position    Int     @db.SmallInt()
+  project     Project @relation(fields: [projectSlug, userId], references: [slug, userId], onUpdate: Cascade, onDelete: Cascade)
+
+  @@id([slug, projectSlug, userId])
+  @@index([slug, projectSlug, userId])
+  @@map("columns")
 }

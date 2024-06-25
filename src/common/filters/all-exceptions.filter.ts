@@ -4,14 +4,11 @@ import {
   ExceptionFilter,
   HttpException,
   HttpStatus,
-  RequestMethod,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import {
-  CustomHttpExceptionResponse,
-  HttpExceptionResponse,
-} from './interfaces/http-exeption-response.interface';
+
 import { error } from 'console';
+import { CustomHttpExceptionResponse } from '../interfaces/http-exeption-response.interface';
 
 @Catch()
 export class AllExceptionFilter implements ExceptionFilter {

@@ -5,7 +5,8 @@ import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ProjectsModule } from './projects/projects.module';
 import { APP_FILTER } from '@nestjs/core';
-import { AllExceptionFilter } from './common/all-exceptions.filter';
+import { TaskBoardsModule } from './task-boards/task-boards.module';
+import { AllExceptionFilter } from './common/filters/all-exceptions.filter';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AllExceptionFilter } from './common/all-exceptions.filter';
     UsersModule,
     AuthModule,
     ProjectsModule,
+    TaskBoardsModule,
   ],
   providers: [
     {

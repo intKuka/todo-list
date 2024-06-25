@@ -1,4 +1,4 @@
-import { HttpStatus, RequestMethod } from '@nestjs/common';
+import { HttpStatus } from '@nestjs/common';
 
 export interface HttpExceptionResponse {
   statusCode: HttpStatus;
