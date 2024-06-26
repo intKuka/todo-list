@@ -1,7 +1,6 @@
 import {
   ConflictException,
   Injectable,
-  NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -10,6 +9,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
 import { UserMetadata } from 'src/common/types';
+import { SignedInDto } from './dto/signed-in.dto';
 
 //TODO: move exception message to constans
 @Injectable()
@@ -43,25 +43,25 @@ export class AuthService {
   }
 
   async signin({ email, password }: SignInDto) {
-    const user = await this.prisma.user.findFirst({
+    const user = await this.prisma.user.findUnique({
       where: {
         email: email,
       },
     });
     if (!user) {
-      throw new NotFoundException('User not found');
+      throw new UnauthorizedException();
     }
 
     const hash = user.password;
     const isMatch = await bcrypt.compare(password, hash);
     if (!isMatch) {
-      throw new UnauthorizedException('User is unauthorized');
+      throw new UnauthorizedException();
     }
 
     const payload = {
       id: user.id,
       email: user.email,
     };
-    return { access_token: await this.jwtService.signAsync(payload) };
+    return new SignedInDto(await this.jwtService.signAsync(payload));
   }
 }

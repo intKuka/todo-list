@@ -21,22 +21,22 @@ export class AuthGuard implements CanActivate {
 
     const token = this.extractTokenFromHeader(request);
     if (!token) {
-      throw new UnauthorizedException('User is unauthorized');
+      throw new UnauthorizedException();
     }
 
     try {
       const payload: UserMetadata = await this.jwtService.verifyAsync(token);
       request['user'] = payload;
     } catch {
-      throw new UnauthorizedException('User is unauthorized');
+      throw new UnauthorizedException();
     }
 
-    const isExists = await this.prisma.user.findFirst({
+    const isExists = await this.prisma.user.findUnique({
       where: { id: request['user']['id'] },
     });
     if (!isExists) {
       throw new MethodNotAllowedException(
-        "'User that calling this method is no more exists'",
+        'User that calling this method is no more exists',
       );
     } else {
       return true;
