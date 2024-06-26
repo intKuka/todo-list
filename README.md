@@ -14,16 +14,6 @@ $ npm install
 
 Need to create and configure .env file
 
-_Possible enviroments:_
-
-```bash
-# development file
-.development.env
-
-# production file
-.production.env
-```
-
 ## Running the app
 
 ```bash
@@ -35,4 +25,21 @@ $ npm run start:dev
 
 # production mode
 $ npm run start:prod
+```
+
+## Prisma
+
+If you need prisma client UI use:
+
+```bash
+ $ npm run studio:dev
+```
+
+## Docker compose
+
+If you need DB instance you may have it via running the compose file
+
+```bash
+# in the project root
+$ docker compose up --build
 ```
