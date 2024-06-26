@@ -13,7 +13,13 @@ import {
 import { AuthGuard } from 'src/auth/jwt-auth.guard';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { AssignSlugInBody } from 'src/common/pipes/assign-slug-to-body.pipe';
 import { GetUserMetadata } from 'src/common/decorators/get-user-metadata.decorator';
 import { UpdateProjectDto } from './dto/update-project.dto';
@@ -27,7 +33,7 @@ import { GetSlug } from 'src/common/pipes/get-slug.pipe';
 export class ProjectsController {
   constructor(private projects: ProjectsService) {}
 
-  @ApiOkResponse({ type: ProjectDto })
+  @ApiCreatedResponse({ type: ProjectDto })
   @Post()
   async createUserProject(
     @GetUserMetadata('id') userId: number,
@@ -63,6 +69,7 @@ export class ProjectsController {
     return result;
   }
 
+  @ApiNoContentResponse()
   @Patch(':title')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateUserProjectByTitle(
@@ -70,24 +77,16 @@ export class ProjectsController {
     @Param('title', GetSlug) slug: string,
     @Body(new AssignSlugInBody('title')) dto: UpdateProjectDto,
   ): Promise<void> {
-    const result = await this.projects.updateProjectOfUserByTitle(
-      { slug, userId },
-      dto,
-    );
-    return result;
+    await this.projects.updateProjectOfUserByTitle({ slug, userId }, dto);
   }
 
+  @ApiNoContentResponse()
   @Delete(':title')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUserProjectByTitle(
     @GetUserMetadata('id') userId: number,
     @Param('title', GetSlug) slug: string,
-  ) {
-    const result = await this.projects.deleteProjectOfUserByTitle({
-      slug,
-      userId,
-    });
-
-    return result;
+  ): Promise<void> {
+    await this.projects.deleteProjectOfUserByTitle({ slug, userId });
   }
 }

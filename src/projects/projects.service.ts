@@ -8,23 +8,44 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import projectErrorMessages from './constants/errors.constants';
-import { ProjectId } from 'src/common/types';
+import { Prisma } from '@prisma/client';
+import { stringToSlug } from 'src/common/helpers/work-with-slug.helper';
 
 @Injectable()
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
-  async createProjectForUser(id: ProjectId, data: CreateProjectDto) {
+  async createProjectForUser(
+    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+    data: CreateProjectDto,
+  ) {
     await this.notExistsOrThrow(id);
+
+    const initialColumns: Prisma.ColumnCreateWithoutProjectInput[] = [
+      'To Do',
+      'In Progress',
+      'Done',
+    ].map((label, index) => ({
+      label: label,
+      slug: stringToSlug(label),
+      position: index,
+    }));
 
     const project = await this.prisma.project.create({
       data: {
-        userId: id.userId,
-        slug: id.slug,
+        ...id,
         ...data,
+        columns: {
+          create: initialColumns,
+        },
       },
       include: {
-        user: true,
+        columns: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
+        _count: { select: { columns: true } },
       },
     });
 
@@ -38,19 +59,29 @@ export class ProjectsService {
           userId: userId,
         },
         include: {
-          user: true,
+          _count: { select: { columns: true } },
         },
       })
-      .then((projects) => projects.map((project) => new ProjectDto(project)));
+      .then(
+        async (projects) =>
+          await Promise.all(projects.map((project) => new ProjectDto(project))),
+      );
   }
 
-  async findProjectOfUserByTitle(id: ProjectId) {
+  async findProjectOfUserByTitle(
+    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+  ) {
     const project = await this.prisma.project.findUnique({
       where: {
         slug_userId: id,
       },
       include: {
-        user: true,
+        columns: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
+        _count: { select: { columns: true } },
       },
     });
     if (!project) {
@@ -60,8 +91,11 @@ export class ProjectsService {
     return new ProjectDto(project);
   }
 
-  async updateProjectOfUserByTitle(id: ProjectId, data: UpdateProjectDto) {
-    await this.existsOrThrow(id);
+  async updateProjectOfUserByTitle(
+    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+    data: UpdateProjectDto,
+  ) {
+    await this.findExistProjectOrThrow(id);
 
     await this.prisma.project.update({
       where: {
@@ -71,8 +105,10 @@ export class ProjectsService {
     });
   }
 
-  async deleteProjectOfUserByTitle(id: ProjectId) {
-    await this.existsOrThrow(id);
+  async deleteProjectOfUserByTitle(
+    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+  ) {
+    await this.findExistProjectOrThrow(id);
 
     await this.prisma.project.delete({
       where: {
@@ -81,19 +117,27 @@ export class ProjectsService {
     });
   }
 
-  private async existsOrThrow(id: ProjectId): Promise<void> {
+  async findExistProjectOrThrow(
+    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+  ) {
     const project = await this.prisma.project.findUnique({
       where: {
         slug_userId: id,
       },
+      include: {
+        columns: true,
+      },
     });
     if (!project) throw new NotFoundException(projectErrorMessages.NOT_FOUND);
+    return project;
   }
 
-  private async notExistsOrThrow(projectId: ProjectId): Promise<void> {
+  private async notExistsOrThrow(
+    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+  ) {
     const project = await this.prisma.project.findUnique({
       where: {
-        slug_userId: projectId,
+        slug_userId: id,
       },
     });
     if (project) throw new ConflictException(projectErrorMessages.CONFLICT);

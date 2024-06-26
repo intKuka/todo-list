@@ -1,4 +1,4 @@
+import { PartialType } from '@nestjs/swagger';
 import { CreateProjectDto } from './create-project.dto';
 
-// TODO: make partial extend
-export class UpdateProjectDto extends CreateProjectDto {}
+export class UpdateProjectDto extends PartialType(CreateProjectDto) {}
