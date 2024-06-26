@@ -26,7 +26,7 @@ async function bootstrap() {
   SwaggerModule.setup('/api/docs', app, document);
 
   await app.listen(port, () => {
-    console.log(`Server is running at ${port} in ${process.env.NODE_ENV} mode`);
+    console.log(`Server is running at ${port}`);
   });
 }
 bootstrap();

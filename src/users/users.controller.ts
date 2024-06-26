@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Param,
   Post,
   UseGuards,
   UseInterceptors,
@@ -31,5 +32,11 @@ export class UsersController {
   @Get()
   async findAllUsers(): Promise<UserDto[]> {
     return await this.usersService.fintAllUsers();
+  }
+
+  @ApiOkResponse({ type: [UserDto] })
+  @Get(':id')
+  async deleteUser(@Param('id') id: number): Promise<void> {
+    await this.usersService.deleteUser(id);
   }
 }
