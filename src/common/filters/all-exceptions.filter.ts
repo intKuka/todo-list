@@ -6,65 +6,72 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-
-import { error } from 'console';
-import { CustomHttpExceptionResponse } from '../interfaces/http-exeption-response.interface';
+import { CustomBaseExceptionFilter } from '../abstractions/custom-base-exception-filter.abstract';
+import { ErrorLog } from '../abstractions/error-log.interface';
+import {
+  CustomHttpExceptionResponse,
+  HttpExceptionResponse,
+} from '../abstractions/http-exception-response.interface';
+import { ErrorInfo } from '../types';
+import { JsonWebTokenError } from '@nestjs/jwt';
 
 @Catch()
-export class AllExceptionFilter implements ExceptionFilter {
+export class AllExceptionFilter
+  extends CustomBaseExceptionFilter
+  implements ExceptionFilter, ErrorLog<any>
+{
   catch(exception: unknown, host: ArgumentsHost) {
     const request = host.switchToHttp().getRequest<Request>();
     const response = host.switchToHttp().getResponse<Response>();
-    let throwAfterResponse = false;
 
-    let httpStatus: HttpStatus;
-    let errorMessage: string;
+    console.log((exception as JsonWebTokenError).message);
+    const httpException: HttpException =
+      exception instanceof HttpException
+        ? exception
+        : ((error) => {
+            console.error(error);
+            return new HttpException(
+              'Something went wrong',
+              HttpStatus.INTERNAL_SERVER_ERROR,
+            );
+          })(exception);
 
-    if (exception instanceof HttpException) {
-      errorMessage = exception.message;
-      httpStatus = exception.getStatus();
-    } else {
-      throwAfterResponse = true;
-      errorMessage = 'Something went wrong';
-      httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-    }
+    const errorResponse = httpException.getResponse();
+    const { message, error } = errorResponse as HttpExceptionResponse;
+    const errorInfo: ErrorInfo = {
+      message: message || httpException.message,
+    };
+    if (error) errorInfo.error = error;
 
-    const customErrorResponse = this.getErrorResponse(
-      httpStatus,
-      errorMessage,
+    const status = httpException.getStatus();
+
+    const customErrorResponse = this.createErrorResponse(
+      status,
+      errorInfo,
       request,
     );
-    const errorLog = this.getErrorLog(customErrorResponse, request, exception);
-    console.error(errorLog);
-    response.status(httpStatus).json(customErrorResponse);
 
-    if (throwAfterResponse) throw exception;
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      const log = this.formatErrorLog(customErrorResponse, request, exception);
+      console.log(log);
+      this.writeErrorLogToFile(log);
+    }
+
+    this.sendResponse(customErrorResponse, response);
   }
 
-  private getErrorResponse = (
-    status: HttpStatus,
-    errorMessage: string,
-    req: Request,
-  ): CustomHttpExceptionResponse => ({
-    statusCode: status,
-    error: errorMessage,
-    path: req.url,
-    method: req.method,
-    timestamp: new Date(),
-  });
-
-  private getErrorLog = (
+  formatErrorLog(
     response: CustomHttpExceptionResponse,
     req: Request,
-    exception: unknown,
-  ): string => {
+    exception: HttpException | any,
+  ): string {
     const user = req['user'];
-    const { statusCode, method, error, path } = response;
+    const { statusCode, method, message, path } = response;
 
     const log = `\n\nResponse: ${method} ${path} -- status: ${statusCode}\n
-    Caller: ${JSON.stringify(user ?? 'Not Signed In')}\n 
-    ${exception instanceof HttpException ? exception.stack : error}\n\n`;
+      Caller: ${JSON.stringify(user ?? 'Not Signed In')}\n
+      ${exception instanceof HttpException ? exception.stack : message}\n\n`;
 
     return log;
-  };
+  }
 }

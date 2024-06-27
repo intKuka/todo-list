@@ -2,7 +2,10 @@ import {
   Body,
   ClassSerializerInterceptor,
   Controller,
+  Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
   UseGuards,
@@ -11,13 +14,17 @@ import {
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/jwt-auth.guard';
 import { CreateUserDto } from './dto/create-user.dto';
-import { ApiBearerAuth, ApiOkResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiNoContentResponse,
+  ApiOkResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { UserDto } from './dto/user.dto';
 
 @ApiBearerAuth()
 @ApiTags('Users')
 @UseGuards(AuthGuard)
-@UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
@@ -34,8 +41,9 @@ export class UsersController {
     return await this.usersService.fintAllUsers();
   }
 
-  @ApiOkResponse({ type: [UserDto] })
-  @Get(':id')
+  @ApiNoContentResponse({ type: [UserDto] })
+  @HttpCode(HttpStatus.NO_CONTENT)
+  @Delete(':id')
   async deleteUser(@Param('id') id: number): Promise<void> {
     await this.usersService.deleteUser(id);
   }

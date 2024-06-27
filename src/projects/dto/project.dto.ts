@@ -3,14 +3,18 @@ import { Project } from '@prisma/client';
 import { Expose, Type, plainToClass } from 'class-transformer';
 import { ColumnDto } from 'src/task-boards/dto/columns/column.dto';
 import { CountInProject } from '../classes/count-in-project.class';
+import { group } from 'console';
 
 export class ProjectDto implements Project {
   constructor(project: any) {
-    return plainToClass(ProjectDto, project, { excludeExtraneousValues: true });
+    return plainToClass(ProjectDto, project, {
+      excludeExtraneousValues: true,
+      groups: ['project'],
+    });
   }
 
   @ApiProperty({ example: 'project-title' })
-  @Expose()
+  @Expose({ groups: ['user', 'project'] })
   slug: string;
 
   @ApiProperty({ example: 1 })
@@ -18,11 +22,11 @@ export class ProjectDto implements Project {
   userId: number;
 
   @ApiProperty({ example: 'project title' })
-  @Expose()
+  @Expose({ groups: ['user', 'project'] })
   title: string;
 
   @ApiProperty({ examples: ['this is a description', null], nullable: true })
-  @Expose()
+  @Expose({ groups: ['user', 'project'] })
   description: string;
 
   @ApiProperty({ example: new Date() })

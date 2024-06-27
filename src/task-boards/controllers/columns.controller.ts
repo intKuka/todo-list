@@ -21,10 +21,10 @@ import {
 } from '@nestjs/swagger';
 import { GetSlug } from 'src/common/pipes/get-slug.pipe';
 import { AuthGuard } from 'src/auth/jwt-auth.guard';
-import { ProjectDto } from 'src/projects/dto/project.dto';
 import { UpdateColumnDto } from '../dto/columns/update-column.dto';
 import { UpdateColumnPositionDto } from '../dto/columns/update-column-position.dto';
 import { ColumnDto } from '../dto/columns/column.dto';
+import { AssignSlugInBody } from 'src/common/pipes/assign-slug-to-body.pipe';
 
 @ApiBearerAuth()
 @ApiTags('Task Boards')
@@ -71,14 +71,9 @@ export class ColumnsController {
     @GetUserMetadata('id') userId: number,
     @Param('title', GetSlug) projectSlug: string,
     @Param('label', GetSlug) slug: string,
-    @Body('label', GetSlug) newSlug: string,
-    @Body() dto: UpdateColumnDto,
+    @Body(new AssignSlugInBody('label')) dto: UpdateColumnDto,
   ) {
-    await this.columns.updateCoumnInProject(
-      { slug, projectSlug, userId },
-      newSlug,
-      dto,
-    );
+    await this.columns.updateCoumnInProject({ slug, projectSlug, userId }, dto);
   }
 
   @ApiOkResponse({ type: [ColumnDto] })

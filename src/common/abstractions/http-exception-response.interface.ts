@@ -2,7 +2,8 @@ import { HttpStatus } from '@nestjs/common';
 
 export interface HttpExceptionResponse {
   statusCode: HttpStatus;
-  error: string;
+  error?: string | object;
+  message?: string | object;
 }
 
 export interface CustomHttpExceptionResponse extends HttpExceptionResponse {

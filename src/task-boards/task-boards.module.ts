@@ -8,6 +8,7 @@ import { RouterModule } from '@nestjs/core';
 @Module({
   imports: [
     AuthModule,
+    ProjectsModule,
     RouterModule.register([
       {
         path: 'projects/:title',

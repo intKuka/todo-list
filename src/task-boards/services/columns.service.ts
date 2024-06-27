@@ -1,30 +1,31 @@
-import {
-  BadRequestException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateColumnDto } from '../dto/columns/create-column.dto';
-import columnErrorMessages from '../constants/column-error.constants';
 import { Prisma } from '@prisma/client';
 import { UpdateColumnPositionDto } from '../dto/columns/update-column-position.dto';
 import { ColumnDto } from '../dto/columns/column.dto';
+import { ProjectsService } from 'src/projects/projects.service';
+import { SameColumnPositionException } from 'src/common/exceptions/same-column-position.exception';
 
 @Injectable()
 export class ColumnsService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private projects: ProjectsService,
+  ) {}
 
   async createColumnInProject(
     projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput,
     slug: string,
     data: CreateColumnDto,
   ) {
-    const columnCount = await this.countColumnsInProject(projectId);
+    const { columns: columnsCount } =
+      await this.projects.countInProject(projectId);
 
     const newData: Prisma.ColumnCreateWithoutProjectInput = {
       slug: slug,
       label: data.label,
-      position: columnCount,
+      position: columnsCount,
     };
 
     const {
@@ -40,7 +41,7 @@ export class ColumnsService {
       },
       select: {
         project: {
-          include: {
+          select: {
             columns: {
               orderBy: {
                 position: 'asc',
@@ -86,7 +87,7 @@ export class ColumnsService {
     //#endregion
 
     if (desiredPosition === actualPosition)
-      throw new BadRequestException(columnErrorMessages.SAME_COLUMN_POSITIONS);
+      throw new SameColumnPositionException();
 
     const projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput = {
       slug: id.projectSlug,
@@ -111,17 +112,13 @@ export class ColumnsService {
 
   async updateCoumnInProject(
     id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
-    newSlug: string,
     data: Prisma.ColumnUpdateWithoutProjectInput,
   ) {
-    await this.findExistColumnInProjectOrThrow(id);
-
     return await this.prisma.column.update({
       where: {
         slug_projectSlug_userId: id,
       },
       data: {
-        slug: newSlug,
         ...data,
       },
     });
@@ -141,12 +138,14 @@ export class ColumnsService {
       position,
     );
     const deleteColumn = this.deleteColumnQuery(id);
-    const findColumnsInProject = this.findColumnsInProjectQuery(projectId);
 
-    const columns = await this.prisma
-      .$transaction([shiftColumns, deleteColumn, findColumnsInProject])
-      .then((result) => result[2].columns);
-    return columns;
+    await this.prisma.$transaction([shiftColumns, deleteColumn]);
+
+    return await this.projects
+      .findColumnsInProject(projectId)
+      .then((result) =>
+        Promise.all(result.columns.map((column) => new ColumnDto(column))),
+      );
   }
 
   private shiftColumnPotisionsBulkQuery(
@@ -248,51 +247,14 @@ export class ColumnsService {
     });
   }
 
-  private findColumnsInProjectQuery(
-    projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput,
-  ) {
-    return this.prisma.project.findUniqueOrThrow({
-      where: {
-        slug_userId: projectId,
-      },
-      select: {
-        columns: {
-          orderBy: {
-            position: 'asc',
-          },
-        },
-      },
-    });
-  }
-
-  private async countColumnsInProject(
-    projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput,
-  ) {
-    return (
-      await this.prisma.project.findUnique({
-        where: {
-          slug_userId: projectId,
-        },
-        select: {
-          _count: {
-            select: {
-              columns: true,
-            },
-          },
-        },
-      })
-    )._count.columns;
-  }
-
   private async findExistColumnInProjectOrThrow(
     id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
   ) {
-    const column = await this.prisma.column.findUnique({
+    const column = await this.prisma.column.findUniqueOrThrow({
       where: {
         slug_projectSlug_userId: id,
       },
     });
-    if (!column) throw new NotFoundException(columnErrorMessages.NOT_FOUND);
 
     return column;
   }

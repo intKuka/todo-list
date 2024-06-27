@@ -7,7 +7,7 @@ import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import projectErrorMessages from './constants/errors.constants';
+import projectErrorMessages from './constants/project-error.constants';
 import { Prisma } from '@prisma/client';
 import { stringToSlug } from 'src/common/helpers/work-with-slug.helper';
 
@@ -19,8 +19,6 @@ export class ProjectsService {
     id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
     data: CreateProjectDto,
   ) {
-    await this.notExistsOrThrow(id);
-
     const initialColumns: Prisma.ColumnCreateWithoutProjectInput[] = [
       'To Do',
       'In Progress',
@@ -62,16 +60,15 @@ export class ProjectsService {
           _count: { select: { columns: true } },
         },
       })
-      .then(
-        async (projects) =>
-          await Promise.all(projects.map((project) => new ProjectDto(project))),
+      .then((projects) =>
+        Promise.all(projects.map((project) => new ProjectDto(project))),
       );
   }
 
   async findProjectOfUserByTitle(
     id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
   ) {
-    const project = await this.prisma.project.findUnique({
+    const project = await this.prisma.project.findUniqueOrThrow({
       where: {
         slug_userId: id,
       },
@@ -84,10 +81,6 @@ export class ProjectsService {
         _count: { select: { columns: true } },
       },
     });
-    if (!project) {
-      throw new NotFoundException(projectErrorMessages.NOT_FOUND);
-    }
-
     return new ProjectDto(project);
   }
 
@@ -95,8 +88,6 @@ export class ProjectsService {
     id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
     data: UpdateProjectDto,
   ) {
-    await this.findExistProjectOrThrow(id);
-
     await this.prisma.project.update({
       where: {
         slug_userId: id,
@@ -108,8 +99,6 @@ export class ProjectsService {
   async deleteProjectOfUserByTitle(
     id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
   ) {
-    await this.findExistProjectOrThrow(id);
-
     await this.prisma.project.delete({
       where: {
         slug_userId: id,
@@ -117,29 +106,33 @@ export class ProjectsService {
     });
   }
 
-  async findExistProjectOrThrow(
-    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
-  ) {
-    const project = await this.prisma.project.findUnique({
+  async countInProject(projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput) {
+    const project = await this.prisma.project.findUniqueOrThrow({
       where: {
-        slug_userId: id,
+        slug_userId: projectId,
       },
-      include: {
-        columns: true,
+      select: {
+        _count: true,
       },
     });
-    if (!project) throw new NotFoundException(projectErrorMessages.NOT_FOUND);
-    return project;
+
+    return project._count;
   }
 
-  private async notExistsOrThrow(
-    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+  async findColumnsInProject(
+    projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput,
   ) {
-    const project = await this.prisma.project.findUnique({
+    return await this.prisma.project.findUniqueOrThrow({
       where: {
-        slug_userId: id,
+        slug_userId: projectId,
+      },
+      select: {
+        columns: {
+          orderBy: {
+            position: 'asc',
+          },
+        },
       },
     });
-    if (project) throw new ConflictException(projectErrorMessages.CONFLICT);
   }
 }
