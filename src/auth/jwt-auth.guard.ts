@@ -3,7 +3,6 @@ import {
   ExecutionContext,
   Injectable,
   UnauthorizedException,
-  UseInterceptors,
 } from '@nestjs/common';
 import { JsonWebTokenError, JwtService, TokenExpiredError } from '@nestjs/jwt';
 import { Request } from 'express';

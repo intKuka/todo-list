@@ -1,13 +1,8 @@
-import {
-  ConflictException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
-import projectErrorMessages from './constants/project-error.constants';
 import { Prisma } from '@prisma/client';
 import { stringToSlug } from 'src/common/helpers/work-with-slug.helper';
 

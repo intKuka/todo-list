@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '@prisma/client';
-import { Exclude, Expose, Type, plainToClass } from 'class-transformer';
-import { ProjectDto } from 'src/projects/dto/project.dto';
+import { Exclude, Expose, plainToClass } from 'class-transformer';
 
 export class UserDto implements User {
   constructor(user: any) {

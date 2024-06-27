@@ -1,6 +1,5 @@
 import {
   Body,
-  ClassSerializerInterceptor,
   Controller,
   Delete,
   Get,
@@ -9,7 +8,6 @@ import {
   Param,
   Post,
   UseGuards,
-  UseInterceptors,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from 'src/auth/jwt-auth.guard';

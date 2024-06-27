@@ -2,7 +2,7 @@ import { ArgumentMetadata, Injectable, PipeTransform } from '@nestjs/common';
 import { stringToSlug } from '../helpers/work-with-slug.helper';
 
 @Injectable()
-export class AssignSlugInBody<T extends Object> implements PipeTransform {
+export class AssignSlugInBody<T extends object> implements PipeTransform {
   /**
    * @param {string} propertyName name of the property whose value to use for slug
    */

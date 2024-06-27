@@ -3,7 +3,6 @@ import { Project } from '@prisma/client';
 import { Expose, Type, plainToClass } from 'class-transformer';
 import { ColumnDto } from 'src/task-boards/dto/columns/column.dto';
 import { CountInProject } from '../classes/count-in-project.class';
-import { group } from 'console';
 
 export class ProjectDto implements Project {
   constructor(project: any) {
