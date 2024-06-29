@@ -5,7 +5,6 @@ import { Prisma } from '@prisma/client';
 import { UpdateColumnPositionDto } from '../dto/columns/update-column-position.dto';
 import { ColumnDto } from '../dto/columns/column.dto';
 import { ProjectsService } from 'src/projects/projects.service';
-import { SamePositionException } from 'src/common/exceptions/same-position.exception';
 import {
   ColumnId,
   ProjectId,
