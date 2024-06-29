@@ -11,7 +11,7 @@ export class TaskDto implements Task {
   @Expose()
   id: number;
 
-  @ApiProperty({ example: 'task-name' })
+  @ApiProperty({ example: 'Task name' })
   @Expose()
   name: string;
 
@@ -19,7 +19,7 @@ export class TaskDto implements Task {
   @Expose()
   description: string;
 
-  @ApiProperty({ example: 0 })
+  @ApiProperty({ example: 0, description: 'task position inside column' })
   @Expose()
   position: number;
 

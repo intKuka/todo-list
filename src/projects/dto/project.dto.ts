@@ -7,12 +7,14 @@ export class ProjectDto implements Project {
   constructor(project: any) {
     return plainToClass(ProjectDto, project, {
       excludeExtraneousValues: true,
-      groups: ['project'],
     });
   }
 
-  @ApiProperty({ example: 'project-title' })
-  @Expose({ groups: ['user', 'project'] })
+  @ApiProperty({
+    example: 'project-title',
+    description: 'title slug',
+  })
+  @Expose()
   slug: string;
 
   @ApiProperty({ example: 1 })
@@ -20,11 +22,11 @@ export class ProjectDto implements Project {
   userId: number;
 
   @ApiProperty({ example: 'project title' })
-  @Expose({ groups: ['user', 'project'] })
+  @Expose()
   title: string;
 
   @ApiProperty({ examples: ['this is a description', null], nullable: true })
-  @Expose({ groups: ['user', 'project'] })
+  @Expose()
   description: string;
 
   @ApiProperty({ example: new Date() })
@@ -35,7 +37,7 @@ export class ProjectDto implements Project {
   @Expose()
   updatedAt: Date;
 
-  @ApiProperty()
+  @ApiProperty({ example: 1 })
   @Expose({ name: '_count' })
   @Transform(({ value }) => (value as Prisma.ProjectCountOutputType).columns)
   columnCount: number;

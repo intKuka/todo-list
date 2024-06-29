@@ -2,7 +2,10 @@ import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
 export class CreateTaskDto {
-  @ApiProperty({ examples: ['Column label', 'column-label'] })
+  @ApiProperty({
+    examples: ['Column label', 'column-label'],
+    description: 'column in which the task should be placed',
+  })
   @IsString()
   @IsNotEmpty()
   columnLabel: string;

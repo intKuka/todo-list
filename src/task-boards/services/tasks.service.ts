@@ -79,7 +79,7 @@ export class TasksService {
     projectId: ProjectId,
     data: UpdateTaskDto,
   ) {
-    const task = await this.prisma.task.findUnique({
+    const task = await this.prisma.task.findUniqueOrThrow({
       where: {
         id: taskId,
       },
@@ -106,7 +106,7 @@ export class TasksService {
   }
 
   async deleteTaksInProject(taskId: number, projectId: ProjectId) {
-    const task = await this.prisma.task.findUnique({
+    const task = await this.prisma.task.findUniqueOrThrow({
       where: {
         id: taskId,
       },

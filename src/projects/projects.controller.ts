@@ -14,10 +14,14 @@ import { AuthGuard } from 'src/auth/jwt-auth.guard';
 import { ProjectsService } from './projects.service';
 import { CreateProjectDto } from './dto/create-project.dto';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
   ApiOkResponse,
+  ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { AssignSlugInBody } from 'src/common/pipes/assign-slug-to-body.pipe';
@@ -33,7 +37,12 @@ import { GetSlug } from 'src/common/pipes/get-slug.pipe';
 export class ProjectsController {
   constructor(private projects: ProjectsService) {}
 
-  @ApiCreatedResponse({ type: ProjectDto })
+  @ApiOperation({ summary: 'Create project' })
+  @ApiCreatedResponse({
+    type: ProjectDto,
+    description: 'Newly created project',
+  })
+  @ApiBadRequestResponse({ description: 'Validation fail' })
   @Post()
   async createUserProject(
     @GetUserMetadata('id') userId: number,
@@ -47,7 +56,8 @@ export class ProjectsController {
     return result;
   }
 
-  @ApiOkResponse({ type: [ProjectDto] })
+  @ApiOperation({ summary: "List all of user's projects" })
+  @ApiOkResponse({ type: [ProjectDto], description: 'Project list' })
   @Get()
   async findAllUserProjects(
     @GetUserMetadata('id') userId: number,
@@ -56,7 +66,10 @@ export class ProjectsController {
     return result;
   }
 
-  @ApiOkResponse({ type: ProjectDto })
+  @ApiOperation({ summary: 'Get user project by title slug' })
+  @ApiOkResponse({ type: ProjectDto, description: 'Found project' })
+  @ApiNotFoundResponse({ description: 'Project not found' })
+  @ApiParam({ name: 'title', description: 'project slug or actual title' })
   @Get(':title')
   async findUserProjectByTitle(
     @GetUserMetadata('id') userId: number,
@@ -69,7 +82,11 @@ export class ProjectsController {
     return result;
   }
 
-  @ApiNoContentResponse()
+  @ApiOperation({ summary: 'Update user project by title slug' })
+  @ApiNoContentResponse({ description: 'Updated successfully' })
+  @ApiBadRequestResponse({ description: 'Validation fail' })
+  @ApiNotFoundResponse({ description: 'Project not found' })
+  @ApiParam({ name: 'title', description: 'project slug or actual title' })
   @Patch(':title')
   @HttpCode(HttpStatus.NO_CONTENT)
   async updateUserProjectByTitle(
@@ -80,7 +97,10 @@ export class ProjectsController {
     await this.projects.updateProjectOfUserByTitle({ slug, userId }, dto);
   }
 
-  @ApiNoContentResponse()
+  @ApiOperation({ summary: 'Delete user project by title slug' })
+  @ApiNoContentResponse({ description: 'Deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Project not found' })
+  @ApiParam({ name: 'title', description: 'project slug or actual title' })
   @Delete(':title')
   @HttpCode(HttpStatus.NO_CONTENT)
   async deleteUserProjectByTitle(

@@ -11,9 +11,14 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiMethodNotAllowedResponse,
   ApiNoContentResponse,
+  ApiNotFoundResponse,
+  ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from 'src/auth/jwt-auth.guard';
@@ -32,7 +37,11 @@ import { AllowTaskActions } from '../allow-task-actions.guard';
 export class TasksController {
   constructor(private tasks: TasksService) {}
 
-  @ApiCreatedResponse()
+  @ApiOperation({ summary: 'Create task in project' })
+  @ApiCreatedResponse({ description: 'Created successfully' })
+  @ApiBadRequestResponse({ description: 'Validation fail' })
+  @ApiNotFoundResponse({ description: 'Column not found' })
+  @ApiParam({ name: 'title', description: 'project slug or actual title' })
   @Post()
   async createTaskInProject(
     @GetUserMetadata('id') userId: number,
@@ -51,7 +60,13 @@ export class TasksController {
     return result;
   }
 
-  @ApiNoContentResponse()
+  @ApiOperation({ summary: 'Change task position in project' })
+  @ApiNoContentResponse({ description: 'Position changed successfully' })
+  @ApiBadRequestResponse({ description: 'Validation fail' })
+  @ApiNotFoundResponse({ description: 'Task not found' })
+  @ApiMethodNotAllowedResponse({ description: 'User policy violation' })
+  @ApiParam({ name: 'title', description: 'project slug or actual title' })
+  @ApiParam({ name: 'id', description: 'task id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AllowTaskActions)
   @Patch(':id')
@@ -70,7 +85,13 @@ export class TasksController {
     return result;
   }
 
-  @ApiNoContentResponse()
+  @ApiOperation({ summary: 'Update task in project' })
+  @ApiNoContentResponse({ description: 'Updated successfully' })
+  @ApiBadRequestResponse({ description: 'Validation fail' })
+  @ApiNotFoundResponse({ description: 'Task not found' })
+  @ApiMethodNotAllowedResponse({ description: 'User policy violation' })
+  @ApiParam({ name: 'title', description: 'project slug or actual title' })
+  @ApiParam({ name: 'id', description: 'task id' })
   @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AllowTaskActions)
   @Put(':id')
@@ -87,9 +108,14 @@ export class TasksController {
     );
   }
 
-  @ApiNoContentResponse()
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @ApiOperation({ summary: 'Delete task in project' })
+  @ApiNoContentResponse({ description: 'Deleted successfully' })
+  @ApiNotFoundResponse({ description: 'Task not found' })
+  @ApiMethodNotAllowedResponse({ description: 'User policy violation' })
+  @ApiParam({ name: 'title', description: 'project slug or actual title' })
+  @ApiParam({ name: 'id', description: 'task id' })
   @UseGuards(AllowTaskActions)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Delete(':id')
   async deleteTaksInProject(
     @GetUserMetadata('id') userId: number,

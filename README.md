@@ -38,8 +38,11 @@ The original slug values ​​can also be substituted into the request path, be
 - _every word in lowercase_
 
 **For example**
+
 `/api/projects/my-project/columns/to-do`
+
 is equal to
+
 `/api/projects/My project/columns/To Do`
 
 ## Prisma

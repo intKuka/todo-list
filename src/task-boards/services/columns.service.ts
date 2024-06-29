@@ -163,6 +163,7 @@ export class ColumnsService {
       slug: projectSlug,
       userId: userId,
     };
+
     const shiftColumns = this.shiftColumnPositionsBulkQuery(
       projectId,
       position,

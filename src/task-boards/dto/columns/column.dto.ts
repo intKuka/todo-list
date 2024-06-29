@@ -12,11 +12,11 @@ export class ColumnDto implements Column {
   @Expose()
   label: string;
 
-  @ApiProperty({ example: 'project-column' })
+  @ApiProperty({ example: 'project-column', description: 'label slug' })
   @Expose()
   slug: string;
 
-  @ApiProperty({ example: 0 })
+  @ApiProperty({ example: 0, description: 'column position in project' })
   @Expose()
   position: number;
 
