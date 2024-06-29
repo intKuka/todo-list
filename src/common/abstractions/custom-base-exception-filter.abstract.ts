@@ -1,7 +1,7 @@
 import { HttpStatus } from '@nestjs/common';
 import { CustomHttpExceptionResponse } from './http-exception-response.interface';
 import { Request, Response } from 'express';
-import { ErrorInfo as ErrorInfo } from '../types';
+import { ErrorInfo } from '../custom-types/common.types';
 import * as fs from 'fs';
 
 export abstract class CustomBaseExceptionFilter {

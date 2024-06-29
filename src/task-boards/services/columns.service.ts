@@ -93,7 +93,7 @@ export class ColumnsService {
       slug: id.projectSlug,
       userId: id.userId,
     };
-    const shiftColumns = this.shiftColumnPotisionsBulkQuery(
+    const shiftColumns = this.shiftColumnPositionsBulkQuery(
       projectId,
       actualPosition,
       desiredPosition,
@@ -124,6 +124,37 @@ export class ColumnsService {
     });
   }
 
+  async findExistColumnInProjectOrThrow(
+    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
+  ) {
+    const column = await this.prisma.column.findUniqueOrThrow({
+      where: {
+        slug_projectSlug_userId: id,
+      },
+    });
+
+    return column;
+  }
+
+  async countTasksInColumn(
+    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
+  ) {
+    return await this.prisma.column
+      .findUniqueOrThrow({
+        where: {
+          slug_projectSlug_userId: id,
+        },
+        select: {
+          _count: {
+            select: {
+              tasks: true,
+            },
+          },
+        },
+      })
+      .then((result) => result._count.tasks);
+  }
+
   async deleteColumnInProject(
     id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
   ) {
@@ -133,7 +164,7 @@ export class ColumnsService {
       slug: projectSlug,
       userId: userId,
     };
-    const shiftColumns = this.shiftColumnPotisionsBulkQuery(
+    const shiftColumns = this.shiftColumnPositionsBulkQuery(
       projectId,
       position,
     );
@@ -148,7 +179,7 @@ export class ColumnsService {
       );
   }
 
-  private shiftColumnPotisionsBulkQuery(
+  private shiftColumnPositionsBulkQuery(
     projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput,
     actualPosition: number,
     desiredPosition: number = undefined,
@@ -245,17 +276,5 @@ export class ColumnsService {
         slug_projectSlug_userId: id,
       },
     });
-  }
-
-  private async findExistColumnInProjectOrThrow(
-    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
-  ) {
-    const column = await this.prisma.column.findUniqueOrThrow({
-      where: {
-        slug_projectSlug_userId: id,
-      },
-    });
-
-    return column;
   }
 }

@@ -27,6 +27,21 @@ $ npm run start:dev
 $ npm run start:prod
 ```
 
+## Concepts
+
+This project uses so-called slug values (string alias as unique value). They are used as an identifier for some entities (projects, columns).
+The original slug values ​​can also be substituted into the request path, because the server will always attempt to cast the required user input into a slug value.
+
+### Slug core rules
+
+- _all whitespaces replaced with dash symbol_
+- _every word in lowercase_
+
+**For example**
+`/api/projects/my-project/columns/to-do`
+is equal to
+`/api/projects/My project/columns/To Do`
+
 ## Prisma
 
 If you need prisma client UI use:

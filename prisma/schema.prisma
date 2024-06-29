@@ -15,8 +15,8 @@ datasource db {
 
 model User {
   id        Int       @id @default(autoincrement())
-  email     String    @unique @db.VarChar()
-  password  String    @db.VarChar()
+  email     String    @unique
+  password  String
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime  @updatedAt @map("updated_at")
   projects  Project[]
@@ -27,10 +27,10 @@ model User {
 }
 
 model Project {
-  title       String   @db.VarChar(50)
-  slug        String   @db.VarChar(50)
+  title       String
+  slug        String
   userId      Int      @map("user_id")
-  description String?  @db.VarChar(200)
+  description String?
   user        User     @relation(fields: [userId], references: [id], onUpdate: Cascade, onDelete: Cascade)
   createdAt   DateTime @default(now()) @map("created_at")
   updatedAt   DateTime @updatedAt @map("updated_at")
@@ -42,14 +42,30 @@ model Project {
 }
 
 model Column {
-  slug        String  @db.VarChar(50)
-  projectSlug String  @map("project_slug") @db.VarChar(50)
+  slug        String
+  projectSlug String  @map("project_slug")
   userId      Int     @map("user_id")
-  label       String  @db.VarChar(50)
+  label       String
   position    Int     @db.SmallInt()
   project     Project @relation(fields: [projectSlug, userId], references: [slug, userId], onUpdate: Cascade, onDelete: Cascade)
+  tasks       Task[]
 
   @@id([slug, projectSlug, userId])
   @@index([slug, projectSlug, userId])
   @@map("columns")
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @map("user_id")
+  projectSlug String   @map("project_slug")
+  columnSlug  String   @map("column_slug")
+  name        String
+  description String?
+  position    Int
+  createdAt   DateTime @default(now())
+  column      Column   @relation(fields: [userId, projectSlug, columnSlug], references: [userId, projectSlug, slug], onUpdate: Cascade, onDelete: Cascade)
+
+  @@index([userId, projectSlug, columnSlug])
+  @@map("tasks")
 }

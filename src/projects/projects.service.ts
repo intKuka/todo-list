@@ -52,7 +52,11 @@ export class ProjectsService {
           userId: userId,
         },
         include: {
-          _count: { select: { columns: true } },
+          _count: {
+            select: {
+              columns: true,
+            },
+          },
         },
       })
       .then((projects) =>
@@ -72,8 +76,24 @@ export class ProjectsService {
           orderBy: {
             position: 'asc',
           },
+          include: {
+            tasks: {
+              orderBy: {
+                position: 'asc',
+              },
+            },
+            _count: {
+              select: {
+                tasks: true,
+              },
+            },
+          },
         },
-        _count: { select: { columns: true } },
+        _count: {
+          select: {
+            columns: true,
+          },
+        },
       },
     });
     return new ProjectDto(project);

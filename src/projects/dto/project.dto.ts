@@ -1,8 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Project } from '@prisma/client';
-import { Expose, Type, plainToClass } from 'class-transformer';
+import { Prisma, Project } from '@prisma/client';
+import { Expose, Transform, Type, plainToClass } from 'class-transformer';
 import { ColumnDto } from 'src/task-boards/dto/columns/column.dto';
-import { CountInProject } from '../classes/count-in-project.class';
 
 export class ProjectDto implements Project {
   constructor(project: any) {
@@ -38,8 +37,8 @@ export class ProjectDto implements Project {
 
   @ApiProperty()
   @Expose({ name: '_count' })
-  @Type(() => CountInProject)
-  count: CountInProject;
+  @Transform(({ value }) => (value as Prisma.ProjectCountOutputType).columns)
+  columnCount: number;
 
   @ApiProperty({ type: [ColumnDto] })
   @Expose()

@@ -4,11 +4,10 @@ import { SignInDto } from './dto/sign-in.dto';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
-import { UserMetadata } from 'src/common/types';
 import { SignedInDto } from './dto/signed-in.dto';
 import { EmailAlreadyOccupied } from 'src/common/exceptions/email-already-occupied.exception';
+import { UserMetadata } from 'src/common/custom-types/common.types';
 
-//TODO: move exception message to constans
 @Injectable()
 export class AuthService {
   constructor(

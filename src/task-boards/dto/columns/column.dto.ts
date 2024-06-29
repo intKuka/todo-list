@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column } from '@prisma/client';
-import { Expose, plainToClass } from 'class-transformer';
+import { Column, Prisma } from '@prisma/client';
+import { Expose, Transform, Type, plainToClass } from 'class-transformer';
+import { TaskDto } from '../tasks/task.dto';
 
 export class ColumnDto implements Column {
   constructor(columns: any) {
@@ -18,6 +19,16 @@ export class ColumnDto implements Column {
   @ApiProperty({ example: 0 })
   @Expose()
   position: number;
+
+  @ApiProperty({ example: 1 })
+  @Expose({ name: '_count' })
+  @Transform(({ value }) => (value as Prisma.ColumnCountOutputType).tasks)
+  taskCount: number;
+
+  @ApiProperty({ type: [TaskDto] })
+  @Expose()
+  @Type(() => TaskDto)
+  tasks: TaskDto[];
 
   projectSlug: string;
 

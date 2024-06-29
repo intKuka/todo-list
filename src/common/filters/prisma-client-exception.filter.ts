@@ -9,7 +9,7 @@ import { Request, Response } from 'express';
 import { CustomBaseExceptionFilter } from '../abstractions/custom-base-exception-filter.abstract';
 import { ErrorLog } from '../abstractions/error-log.interface';
 import { CustomHttpExceptionResponse } from '../abstractions/http-exception-response.interface';
-import { ErrorInfo } from '../types';
+import { ErrorInfo } from '../custom-types/common.types';
 
 @Catch(Prisma.PrismaClientKnownRequestError)
 export class PrismaClientExceptionFilter

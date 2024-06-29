@@ -4,6 +4,8 @@ import { ColumnsController } from './controllers/columns.controller';
 import { ProjectsModule } from 'src/projects/projects.module';
 import { AuthModule } from 'src/auth/auth.module';
 import { RouterModule } from '@nestjs/core';
+import { TasksController } from './controllers/tasks.controller';
+import { TasksService } from './services/tasks.service';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { RouterModule } from '@nestjs/core';
       },
     ]),
   ],
-  controllers: [ColumnsController],
-  providers: [ColumnsService],
+  controllers: [ColumnsController, TasksController],
+  providers: [ColumnsService, TasksService],
 })
 export class TaskBoardsModule {}

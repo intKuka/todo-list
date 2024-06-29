@@ -12,7 +12,7 @@ import {
   CustomHttpExceptionResponse,
   HttpExceptionResponse,
 } from '../abstractions/http-exception-response.interface';
-import { ErrorInfo } from '../types';
+import { ErrorInfo } from '../custom-types/common.types';
 import { JsonWebTokenError } from '@nestjs/jwt';
 
 @Catch()
