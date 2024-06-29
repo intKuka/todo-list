@@ -5,7 +5,7 @@ import { Prisma } from '@prisma/client';
 import { UpdateColumnPositionDto } from '../dto/columns/update-column-position.dto';
 import { ColumnDto } from '../dto/columns/column.dto';
 import { ProjectsService } from 'src/projects/projects.service';
-import { SameColumnPositionException } from 'src/common/exceptions/same-column-position.exception';
+import { SamePositionException } from 'src/common/exceptions/same-position.exception';
 
 @Injectable()
 export class ColumnsService {
@@ -86,8 +86,7 @@ export class ColumnsService {
         : projectColumnCount - 1;
     //#endregion
 
-    if (desiredPosition === actualPosition)
-      throw new SameColumnPositionException();
+    if (desiredPosition === actualPosition) throw new SamePositionException();
 
     const projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput = {
       slug: id.projectSlug,

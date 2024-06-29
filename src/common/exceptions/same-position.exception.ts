@@ -6,7 +6,7 @@ import { HttpException, HttpStatus } from '@nestjs/common';
 export class SamePositionException extends HttpException {
   constructor() {
     super(
-      'The current and new positions have the same values or no values at all',
+      'The current and new positions have the same values',
       HttpStatus.BAD_REQUEST,
     );
   }

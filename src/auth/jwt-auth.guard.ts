@@ -10,7 +10,7 @@ import { UserMetadata } from 'src/common/custom-types/common.types';
 import { CustomJsonWebTokenError } from 'src/common/exceptions/jwt/custom-json-web-token-error.exception';
 import { TokenExpired } from 'src/common/exceptions/jwt/token-expired.exception';
 import { TokenMalformed } from 'src/common/exceptions/jwt/token-malformed.exception';
-import { UserAlreadyGone } from 'src/common/exceptions/user-already-gone.exception';
+import { UserAlreadyGone } from 'src/common/exceptions/user/user-already-gone.exception';
 import { PrismaService } from 'src/prisma/prisma.service';
 
 @Injectable()

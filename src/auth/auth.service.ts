@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { SignUpDto } from './dto/sign-up.dto';
 import { SignedInDto } from './dto/signed-in.dto';
-import { EmailAlreadyOccupied } from 'src/common/exceptions/email-already-occupied.exception';
+import { EmailAlreadyOccupied } from 'src/common/exceptions/user/email-already-occupied.exception';
 import { UserMetadata } from 'src/common/custom-types/common.types';
 
 @Injectable()

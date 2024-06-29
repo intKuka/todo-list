@@ -1,4 +1,3 @@
-import { SameColumnPositionException } from '../exceptions/same-column-position.exception';
 import { SamePositionException } from '../exceptions/same-position.exception';
 
 type ShiftStrategy = {

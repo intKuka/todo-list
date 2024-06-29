@@ -13,7 +13,6 @@ import {
   HttpExceptionResponse,
 } from '../abstractions/http-exception-response.interface';
 import { ErrorInfo } from '../custom-types/common.types';
-import { JsonWebTokenError } from '@nestjs/jwt';
 
 @Catch()
 export class AllExceptionFilter
@@ -24,26 +23,21 @@ export class AllExceptionFilter
     const request = host.switchToHttp().getRequest<Request>();
     const response = host.switchToHttp().getResponse<Response>();
 
-    console.log((exception as JsonWebTokenError).message);
     const httpException: HttpException =
       exception instanceof HttpException
         ? exception
-        : ((error) => {
-            console.error(error);
-            return new HttpException(
-              'Something went wrong',
-              HttpStatus.INTERNAL_SERVER_ERROR,
-            );
-          })(exception);
+        : new HttpException(
+            'Something went wrong',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+          );
 
+    const status = httpException.getStatus();
     const errorResponse = httpException.getResponse();
     const { message, error } = errorResponse as HttpExceptionResponse;
     const errorInfo: ErrorInfo = {
       message: message || httpException.message,
+      error: error || undefined,
     };
-    if (error) errorInfo.error = error;
-
-    const status = httpException.getStatus();
 
     const customErrorResponse = this.createErrorResponse(
       status,
@@ -52,8 +46,8 @@ export class AllExceptionFilter
     );
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+      console.error(exception);
       const log = this.formatErrorLog(customErrorResponse, request, exception);
-      console.log(log);
       this.writeErrorLogToFile(log);
     }
 

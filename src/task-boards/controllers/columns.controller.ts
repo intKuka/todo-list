@@ -27,7 +27,7 @@ import { ColumnDto } from '../dto/columns/column.dto';
 import { AssignSlugInBody } from 'src/common/pipes/assign-slug-to-body.pipe';
 
 @ApiBearerAuth()
-@ApiTags('Task Boards')
+@ApiTags('Columns')
 @UseGuards(AuthGuard)
 @Controller('columns')
 export class ColumnsController {

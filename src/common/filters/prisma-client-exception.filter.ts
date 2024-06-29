@@ -32,9 +32,9 @@ export class PrismaClientExceptionFilter
 
     if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
       const log = this.formatErrorLog(errorResponse, request, exception);
-      console.log(log);
       this.writeErrorLogToFile(log, 'prisma.errors.log');
     }
+
     this.sendResponse(errorResponse, response);
   }
 

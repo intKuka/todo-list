@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 import { TasksService } from './services/tasks.service';
 import { TasksController } from './controllers/tasks.controller';
 import { stringToSlug } from 'src/common/helpers/work-with-slug.helper';
-import { NotAllowedToThisUser } from 'src/common/exceptions/not-allowed-to-this-user.exception';
+import { NotAllowedToThisUser } from 'src/common/exceptions/user/not-allowed-to-this-user.exception';
 import { NotAllowedFromAnotherProject } from 'src/common/exceptions/not-allowed-from-another-project.exception';
 
 @Injectable()
