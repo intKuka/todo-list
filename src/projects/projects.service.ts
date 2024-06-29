@@ -5,15 +5,13 @@ import { ProjectDto } from './dto/project.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
 import { Prisma } from '@prisma/client';
 import { stringToSlug } from 'src/common/helpers/work-with-slug.helper';
+import { ProjectId } from 'src/common/custom-types/prisma-aliases.types';
 
 @Injectable()
 export class ProjectsService {
   constructor(private prisma: PrismaService) {}
 
-  async createProjectForUser(
-    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
-    data: CreateProjectDto,
-  ) {
+  async createProjectForUser(id: ProjectId, data: CreateProjectDto) {
     const initialColumns: Prisma.ColumnCreateWithoutProjectInput[] = [
       'To Do',
       'In Progress',
@@ -64,9 +62,7 @@ export class ProjectsService {
       );
   }
 
-  async findProjectOfUserByTitle(
-    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
-  ) {
+  async findProjectOfUserByTitle(id: ProjectId) {
     const project = await this.prisma.project.findUniqueOrThrow({
       where: {
         slug_userId: id,
@@ -99,10 +95,7 @@ export class ProjectsService {
     return new ProjectDto(project);
   }
 
-  async updateProjectOfUserByTitle(
-    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
-    data: UpdateProjectDto,
-  ) {
+  async updateProjectOfUserByTitle(id: ProjectId, data: UpdateProjectDto) {
     await this.prisma.project.update({
       where: {
         slug_userId: id,
@@ -111,9 +104,7 @@ export class ProjectsService {
     });
   }
 
-  async deleteProjectOfUserByTitle(
-    id: Prisma.ProjectSlugUserIdCompoundUniqueInput,
-  ) {
+  async deleteProjectOfUserByTitle(id: ProjectId) {
     await this.prisma.project.delete({
       where: {
         slug_userId: id,
@@ -121,7 +112,7 @@ export class ProjectsService {
     });
   }
 
-  async countInProject(projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput) {
+  async countInProject(projectId: ProjectId) {
     const project = await this.prisma.project.findUniqueOrThrow({
       where: {
         slug_userId: projectId,
@@ -134,9 +125,7 @@ export class ProjectsService {
     return project._count;
   }
 
-  async findColumnsInProject(
-    projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput,
-  ) {
+  async findColumnsInProject(projectId: ProjectId) {
     return await this.prisma.project.findUniqueOrThrow({
       where: {
         slug_userId: projectId,

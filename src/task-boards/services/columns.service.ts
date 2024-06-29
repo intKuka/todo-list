@@ -6,6 +6,11 @@ import { UpdateColumnPositionDto } from '../dto/columns/update-column-position.d
 import { ColumnDto } from '../dto/columns/column.dto';
 import { ProjectsService } from 'src/projects/projects.service';
 import { SamePositionException } from 'src/common/exceptions/same-position.exception';
+import {
+  ColumnId,
+  ProjectId,
+} from 'src/common/custom-types/prisma-aliases.types';
+import { getShiftStrategy } from 'src/common/helpers/prisma-shift-strategy.helper';
 
 @Injectable()
 export class ColumnsService {
@@ -15,7 +20,7 @@ export class ColumnsService {
   ) {}
 
   async createColumnInProject(
-    projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+    projectId: ProjectId,
     slug: string,
     data: CreateColumnDto,
   ) {
@@ -56,7 +61,7 @@ export class ColumnsService {
   }
 
   async changeColumnPositionInProject(
-    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
+    id: ColumnId,
     data: UpdateColumnPositionDto,
   ) {
     //#region defining actualPosition, desiredPosition variables
@@ -86,9 +91,7 @@ export class ColumnsService {
         : projectColumnCount - 1;
     //#endregion
 
-    if (desiredPosition === actualPosition) throw new SamePositionException();
-
-    const projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput = {
+    const projectId: ProjectId = {
       slug: id.projectSlug,
       userId: id.userId,
     };
@@ -110,7 +113,7 @@ export class ColumnsService {
   }
 
   async updateCoumnInProject(
-    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
+    id: ColumnId,
     data: Prisma.ColumnUpdateWithoutProjectInput,
   ) {
     return await this.prisma.column.update({
@@ -123,9 +126,7 @@ export class ColumnsService {
     });
   }
 
-  async findExistColumnInProjectOrThrow(
-    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
-  ) {
+  async findExistColumnInProjectOrThrow(id: ColumnId) {
     const column = await this.prisma.column.findUniqueOrThrow({
       where: {
         slug_projectSlug_userId: id,
@@ -135,9 +136,7 @@ export class ColumnsService {
     return column;
   }
 
-  async countTasksInColumn(
-    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
-  ) {
+  async countTasksInColumn(id: ColumnId) {
     return await this.prisma.column
       .findUniqueOrThrow({
         where: {
@@ -154,12 +153,10 @@ export class ColumnsService {
       .then((result) => result._count.tasks);
   }
 
-  async deleteColumnInProject(
-    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
-  ) {
+  async deleteColumnInProject(id: ColumnId) {
     const { position, projectSlug, userId } =
       await this.findExistColumnInProjectOrThrow(id);
-    const projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput = {
+    const projectId: ProjectId = {
       slug: projectSlug,
       userId: userId,
     };
@@ -180,71 +177,27 @@ export class ColumnsService {
   }
 
   private shiftColumnPositionsBulkQuery(
-    projectId: Prisma.ProjectSlugUserIdCompoundUniqueInput,
+    projectId: ProjectId,
     actualPosition: number,
     desiredPosition: number = undefined,
   ) {
-    if (desiredPosition === undefined) {
-      // column moves on the right end
-      return this.prisma.column.updateMany({
-        where: {
-          project: {
-            slug: projectId.slug,
-            userId: projectId.userId,
-          },
-          position: {
-            gt: actualPosition,
-          },
+    const { where, data } = getShiftStrategy(actualPosition, desiredPosition);
+    return this.prisma.column.updateMany({
+      where: {
+        project: {
+          slug: projectId.slug,
+          userId: projectId.userId,
         },
-        data: {
-          position: {
-            decrement: 1,
-          },
-        },
-      });
-    } else if (actualPosition - desiredPosition < 0) {
-      // column moves to the right
-      return this.prisma.column.updateMany({
-        where: {
-          project: {
-            slug: projectId.slug,
-            userId: projectId.userId,
-          },
-          position: {
-            gt: actualPosition,
-            lte: desiredPosition,
-          },
-        },
-        data: {
-          position: {
-            decrement: 1,
-          },
-        },
-      });
-    } else {
-      // column moves to the left
-      return this.prisma.column.updateMany({
-        where: {
-          project: {
-            slug: projectId.slug,
-            userId: projectId.userId,
-          },
-          position: {
-            lt: actualPosition,
-            gte: desiredPosition,
-          },
-        },
-        data: {
-          position: {
-            increment: 1,
-          },
-        },
-      });
-    }
+        ...where,
+      },
+      data: {
+        ...data,
+      },
+    });
   }
 
   private updateTargetColumnPositonQuery(
-    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
+    id: ColumnId,
     desiredPosition: number,
   ) {
     return this.prisma.column.update({
@@ -268,9 +221,7 @@ export class ColumnsService {
     });
   }
 
-  private deleteColumnQuery(
-    id: Prisma.ColumnSlugProjectSlugUserIdCompoundUniqueInput,
-  ) {
+  private deleteColumnQuery(id: ColumnId) {
     return this.prisma.column.delete({
       where: {
         slug_projectSlug_userId: id,

@@ -22,7 +22,7 @@ export class ColumnDto implements Column {
 
   @ApiProperty({ example: 1 })
   @Expose({ name: '_count' })
-  @Transform(({ value }) => (value as Prisma.ColumnCountOutputType).tasks)
+  @Transform(({ value }) => (value as Prisma.ColumnCountOutputType)?.tasks)
   taskCount: number;
 
   @ApiProperty({ type: [TaskDto] })
