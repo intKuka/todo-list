@@ -1,7 +1,7 @@
 # compiled output
-/dist
-/node_modules
-/build
+dist/
+node_modules/
+build/
 
 # Logs
 logs
@@ -29,6 +29,7 @@ lerna-debug.log*
 *.sublime-workspace
 
 # IDE - VSCode
+.vs
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -56,3 +57,6 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 
 # temp files
 TODO
+
+# RabbitMQ
+rabbitmq/

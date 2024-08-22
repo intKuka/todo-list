@@ -1,3 +1,6 @@
+const { group } = require('console');
+const path = require('path');
+
 module.exports = {
   parser: '@typescript-eslint/parser',
   parserOptions: {
@@ -21,5 +24,16 @@ module.exports = {
     '@typescript-eslint/explicit-function-return-type': 'off',
     '@typescript-eslint/explicit-module-boundary-types': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
+    '@typescript-eslint/no-restricted-imports': [
+      'error',
+      {
+        patterns: [
+          {
+            group: ['@app/common/*'],
+            message: 'import from @app/common instead',
+          },
+        ],
+      },
+    ],
   },
 };
