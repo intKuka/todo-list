@@ -5,7 +5,6 @@ import { JwtException } from './jwt.exception';
  */
 export class TokenMalformed extends JwtException {
   constructor() {
-    super();
-    this.message = 'Provided token is malformed';
+    super('Provided token is malformed');
   }
 }

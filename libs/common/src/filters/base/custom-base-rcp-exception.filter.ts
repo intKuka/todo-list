@@ -1,5 +1,5 @@
 import { ArgumentsHost, RpcExceptionFilter } from '@nestjs/common';
-import { Observable } from 'rxjs';
+import { Observable, throwError } from 'rxjs';
 import { RpcExceptionMessage } from '../../interfaces/rpc/rpc-exception-message.interface';
 import { ExceptionLogging } from '../../interfaces/exception-logging.interface';
 
@@ -13,9 +13,11 @@ export abstract class CustomBaseRpcExceptionFilter<TException>
     host: ArgumentsHost,
   ): Observable<RpcExceptionMessage>;
 
-  protected abstract sendMessage(
+  protected sendMessage(
     result: RpcExceptionMessage,
-  ): Observable<RpcExceptionMessage>;
+  ): Observable<RpcExceptionMessage> {
+    return throwError(() => result);
+  }
 
   protected abstract createExceptionMessage(
     exception: TException,

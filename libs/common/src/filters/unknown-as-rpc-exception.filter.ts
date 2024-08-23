@@ -20,10 +20,4 @@ export class UnknownAsRpcExceptionFilter extends CustomBaseRpcExceptionFilter<an
       status,
     };
   }
-
-  protected sendMessage(
-    result: RpcExceptionMessage,
-  ): Observable<RpcExceptionMessage> {
-    return throwError(() => result);
-  }
 }

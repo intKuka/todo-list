@@ -12,10 +12,12 @@ export abstract class CustomBaseTcpExceptionFilter<TException, TReturns>
     host: ArgumentsHost,
   ): void | Promise<TReturns> | Observable<TReturns>;
 
-  protected abstract sendResponse(
+  protected sendResponse(
     result: HttpExceptionResult,
     res: Response,
-  ): void | Promise<TReturns> | Observable<TReturns>;
+  ): void | Promise<TReturns> | Observable<TReturns> {
+    res.status(result.status).json(result);
+  }
 
   protected abstract createExceptionResult(
     exception: TException,

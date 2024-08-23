@@ -25,10 +25,6 @@ export class HttpExceptionFilter extends CustomBaseTcpExceptionFilter<
     this.sendResponse(exceptionResult, response);
   }
 
-  protected sendResponse(result: HttpExceptionResult, res: Response): void {
-    res.status(result.status).json(result);
-  }
-
   protected createExceptionResult(
     exception: HttpException,
     req: Request,

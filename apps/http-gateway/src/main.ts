@@ -4,8 +4,8 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
-const uri = process.env.BASE_URI;
-const port = process.env.API_GATEWAY_PORT;
+const URL = process.env.BASE_URI;
+const PORT = process.env.API_GATEWAY_PORT;
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -22,8 +22,8 @@ async function bootstrap() {
   SwaggerModule.setup('/api/docs', app, document);
 
   // start app
-  await app.listen(port, () =>
-    console.log(`Start http-gateway at ${uri}:${port}`),
+  await app.listen(PORT, () =>
+    console.log(`Start http-gateway at ${URL}:${PORT}`),
   );
 }
 bootstrap();

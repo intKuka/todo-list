@@ -1,9 +1,10 @@
 // modules
 export * from './modules/prisma/prisma.module';
-export * from './modules/rpc-shared.module';
+export * from './modules/rmq/rabbitmq.module';
 
 // services
-export * from './services/prisma.service';
+export * from './modules/prisma/prisma.service';
+export * from './modules/rmq/rabbittmq.service';
 
 // models
 export * from './models/auth/dto/sign-in.dto';
@@ -14,6 +15,7 @@ export * from './models/user/dto//user.dto';
 // decorators
 export * from './decorators/authorization.decorator';
 export * from './decorators/status-on-success.decorator';
+export * from './decorators/rpc-shared.decorator';
 
 // classes
 export * from './classes/base-config-service.class';
@@ -42,3 +44,4 @@ export * from './filters/unknown-as-rpc-exception.filter';
 
 // exceptions
 export * from './exceptions/base.exception';
+export * from './exceptions/custom-rpc-exception';

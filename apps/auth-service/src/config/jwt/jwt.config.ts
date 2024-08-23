@@ -6,6 +6,7 @@ export class JwtConfigService implements JwtOptionsFactory {
       secret: process.env.SECRET_KEY,
       signOptions: {
         expiresIn: '24h',
+        algorithm: 'HS256',
       },
     };
   }

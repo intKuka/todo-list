@@ -7,8 +7,9 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { RpcException } from '@nestjs/microservices';
+import { Observable, throwError } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 
 @Injectable()
 export class WrapResultInterceptor implements NestInterceptor {
@@ -25,6 +26,14 @@ export class WrapResultInterceptor implements NestInterceptor {
             context.getHandler(),
           ) || HttpStatus.OK;
         return new SuccessResult(status, result);
+      }),
+      catchError((error) => {
+        // console.error(error);
+        if (error instanceof RpcException) {
+          return throwError(() => error);
+        } else {
+          throw error;
+        }
       }),
     );
   }

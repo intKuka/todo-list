@@ -2,7 +2,7 @@ export const RmqCommands = {
   user: {
     create: 'user-create',
     findAll: 'user-find-all',
-    findOneByEmail: 'user-find-one-by-email',
+    checkCredentials: 'user-check-credentials',
     delete: 'user-delete',
   },
   token: {

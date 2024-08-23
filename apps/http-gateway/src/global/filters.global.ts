@@ -1,10 +1,10 @@
+import { UnknownAsHttpExceptionFilter } from '../common/filters/unknown-as-http-exception.filter';
+import { HttpExceptionFilter } from '../common/filters/http-exception.filter';
+import { RpcExceptionFilter } from '../common/filters/rpc-exception.filter';
 import { APP_FILTER } from '@nestjs/core';
-import { HttpExceptionFilter } from '../filters/http-exception.filter';
-import { UnknownAsHttpExceptionFilter } from '../filters/unknown-as-http-exception.filter';
 import { Provider } from '@nestjs/common';
-import { RpcExceptionFilter } from '../filters/rpc-exception.filter';
 
-export const globalFilters: Provider[] = [
+export const APP_FILTERS: Provider[] = [
   {
     provide: APP_FILTER,
     useClass: UnknownAsHttpExceptionFilter,

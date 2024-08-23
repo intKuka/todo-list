@@ -6,10 +6,6 @@ import { JwtException } from './jwt.exception';
  */
 export class TokenExpired extends JwtException {
   constructor(expiredAt: Date) {
-    super();
-    this.message = 'Provided token is expired';
-    this.details = {
-      expiredAt,
-    };
+    super('Provided token is expired', undefined, { expiredAt });
   }
 }

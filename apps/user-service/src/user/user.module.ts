@@ -1,7 +1,8 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { PrismaModule } from '@app/common';
+import { PrismaExceptionFilter, PrismaModule } from '@app/common';
+import { APP_FILTER } from '@nestjs/core';
 
 @Module({
   imports: [PrismaModule],

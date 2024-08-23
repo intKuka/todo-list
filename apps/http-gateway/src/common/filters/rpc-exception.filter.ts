@@ -22,10 +22,6 @@ export class RpcExceptionFilter extends CustomBaseTcpExceptionFilter<
     this.sendResponse(exceptionResult, response);
   }
 
-  protected sendResponse(result: HttpExceptionResult, res: Response): void {
-    res.status(result.status).json(result);
-  }
-
   protected createExceptionResult(
     exception: RpcException,
     req: Request,

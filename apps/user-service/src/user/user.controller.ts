@@ -1,8 +1,23 @@
-import { Controller, HttpStatus } from '@nestjs/common';
+import {
+  Controller,
+  HttpStatus,
+  UseFilters,
+  UseInterceptors,
+} from '@nestjs/common';
 import { UserService } from './user.service';
-import { MessagePattern } from '@nestjs/microservices';
-import { CreateUserDto, RmqCommands, StatusOnSuccess } from '@app/common';
+import { MessagePattern, Payload } from '@nestjs/microservices';
+import {
+  CreateUserDto,
+  PrismaExceptionFilter,
+  RmqCommands,
+  RpcShared,
+  StatusOnSuccess,
+  UnknownAsRpcExceptionFilter,
+  WrapResultInterceptor,
+} from '@app/common';
 
+@UseFilters(PrismaExceptionFilter)
+@RpcShared()
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -20,11 +35,15 @@ export class UserController {
   }
 
   @StatusOnSuccess(HttpStatus.OK)
-  @MessagePattern(RmqCommands.user.findOneByEmail)
-  async findOneByEmail(email: string) {
-    return await this.userService.findOneByEmail(email);
+  @MessagePattern(RmqCommands.user.checkCredentials)
+  async findOneByEmail(
+    @Payload('email') email: string,
+    @Payload('password') password: string,
+  ) {
+    return await this.userService.checkCredentials(email, password);
   }
 
+  // @UseFilters(PrismaExceptionFilter)
   @StatusOnSuccess(HttpStatus.OK)
   @MessagePattern(RmqCommands.user.delete)
   async deleteUser(id: number) {

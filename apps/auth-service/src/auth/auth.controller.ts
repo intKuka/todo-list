@@ -1,21 +1,28 @@
-import { Controller, HttpStatus } from '@nestjs/common';
+import { Controller, HttpStatus, UseFilters } from '@nestjs/common';
 import { MessagePattern } from '@nestjs/microservices';
-import { RmqCommands, SuccessResult } from '@app/common';
+import {
+  RmqCommands,
+  RpcShared,
+  StatusOnSuccess,
+  UnknownAsRpcExceptionFilter,
+} from '@app/common';
 import { AuthService } from './auth.service';
 
+@RpcShared()
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @UseFilters(UnknownAsRpcExceptionFilter)
+  @StatusOnSuccess(HttpStatus.CREATED)
   @MessagePattern(RmqCommands.token.create)
-  async createUser(id: number) {
-    const user = await this.authService.createToken(id);
-    return new SuccessResult(HttpStatus.CREATED, user);
+  async createToken(payload: any) {
+    return await this.authService.createToken(payload);
   }
 
+  @StatusOnSuccess(HttpStatus.OK)
   @MessagePattern(RmqCommands.token.verify)
   async verifyToken(token: string) {
-    const data = await this.authService.verifyToken(token);
-    return new SuccessResult(HttpStatus.OK, data);
+    return await this.authService.verifyToken(token);
   }
 }

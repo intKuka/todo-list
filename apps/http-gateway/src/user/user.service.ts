@@ -1,7 +1,7 @@
 import { RmqCommands } from '@app/common';
 import { Inject, Injectable } from '@nestjs/common';
-import { ClientRMQ, RpcException } from '@nestjs/microservices';
-import { catchError, firstValueFrom } from 'rxjs';
+import { ClientRMQ } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 const USER_SERVICE = process.env.USER_SERVICE_NAME;
 

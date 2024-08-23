@@ -13,16 +13,13 @@ export class UnknownAsHttpExceptionFilter extends CustomBaseTcpExceptionFilter<
   void
 > {
   catch(exception: unknown, host: ArgumentsHost): void {
+    console.error(exception);
     const request = host.switchToHttp().getRequest<Request>();
     const response = host.switchToHttp().getResponse<Response>();
     const exceptionResult = this.createExceptionResult(exception, request);
 
     this.writeExceptionToLog(exception);
     this.sendResponse(exceptionResult, response);
-  }
-
-  protected sendResponse(result: HttpExceptionResult, res: Response): void {
-    res.status(result.status).json(result);
   }
 
   protected createExceptionResult(

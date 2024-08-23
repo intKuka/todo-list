@@ -1,17 +1,17 @@
 require('dotenv').config('../.env');
 
 import { NestFactory } from '@nestjs/core';
-import { MicroserviceOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
-import { ConfigService } from './config/config.service';
+import { RabbitMqService, UnknownAsRpcExceptionFilter } from '@app/common';
 
 async function bootstrap() {
-  const app = await NestFactory.createMicroservice<MicroserviceOptions>(
-    AppModule,
-    new ConfigService().get('rabbitmq'),
+  const app = await NestFactory.create(AppModule);
+  const rmqService = app.get(RabbitMqService);
+  app.connectMicroservice(
+    rmqService.getRmqOptions(process.env.RABBITMQ_USER_QUEUE),
   );
 
-  await app.listen();
+  await app.startAllMicroservices();
 }
 
 bootstrap();

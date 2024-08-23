@@ -5,7 +5,6 @@ import { JwtException } from './jwt.exception';
  */
 export class CustomJsonWebTokenError extends JwtException {
   constructor(message: string) {
-    super();
-    this.message = message;
+    super(message);
   }
 }
