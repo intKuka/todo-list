@@ -9,7 +9,7 @@ import { Reflector } from '@nestjs/core';
 import { ClientRMQ, RpcException } from '@nestjs/microservices';
 
 import { Request } from 'express';
-import { UserTokenPayload } from '../../auth/interfaces/user-token-payload.interface';
+import { UserTokenPayload } from '../interfaces/user-token-payload.interface';
 import { RmqCommands } from '@app/common';
 import { catchError, firstValueFrom, timeout, TimeoutError } from 'rxjs';
 import { CustomGatewayTimeoutException } from '../exceptions/custom-gateway-timeout.exception';

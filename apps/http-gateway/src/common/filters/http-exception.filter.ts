@@ -3,12 +3,7 @@ import {
   HttpExceptionResponse,
   HttpExceptionResult,
 } from '@app/common';
-import {
-  ArgumentsHost,
-  Catch,
-  HttpException,
-  HttpStatus,
-} from '@nestjs/common';
+import { ArgumentsHost, Catch, HttpException } from '@nestjs/common';
 
 import { Request, Response } from 'express';
 @Catch(HttpException)

@@ -14,6 +14,7 @@ export class CustomRpcExceptionFilter extends CustomBaseRpcExceptionFilter<Custo
     this.writeExceptionToLog(exception);
     return this.sendMessage(errorMessage);
   }
+
   protected createExceptionMessage(
     exception: CustomRpcException,
   ): RpcExceptionMessage {

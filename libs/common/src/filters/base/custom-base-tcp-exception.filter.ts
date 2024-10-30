@@ -2,7 +2,7 @@ import { ArgumentsHost, ExceptionFilter } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { HttpExceptionResult } from '../../classes/http-exception-result.class';
 import { Observable } from 'rxjs';
-import { ExceptionLogging } from '@app/common/interfaces/exception-logging.interface';
+import { ExceptionLogging } from '@app/common';
 
 export abstract class CustomBaseTcpExceptionFilter<TException, TReturns>
   implements ExceptionFilter<TException>, ExceptionLogging

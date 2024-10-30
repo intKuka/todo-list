@@ -27,9 +27,6 @@ export * from './interfaces/http/http-exception-response.interface';
 export * from './interfaces/exception-logging.interface';
 export * from './interfaces/rpc/rpc-exception-message.interface';
 
-// types
-export * from './custom-types/common.types';
-
 // configs
 export * from './config/rmq/rmq-commands.config';
 

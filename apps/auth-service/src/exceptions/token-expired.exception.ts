@@ -1,11 +1,15 @@
 import { HttpStatus } from '@nestjs/common';
-import { JwtException } from './jwt.exception';
+import { CustomRpcException } from '@app/common';
 
 /**
  * @usecase Provided token is expired
  */
-export class TokenExpired extends JwtException {
+export class TokenExpired extends CustomRpcException {
   constructor(expiredAt: Date) {
-    super('Provided token is expired', undefined, { expiredAt });
+    super({
+      message: 'Provided token is expired',
+      status: HttpStatus.UNAUTHORIZED,
+      details: { expiredAt },
+    });
   }
 }

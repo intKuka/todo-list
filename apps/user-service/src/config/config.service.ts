@@ -1,5 +1,4 @@
 import { BaseConfigService } from '@app/common';
-import { ClientProvider, Transport } from '@nestjs/microservices';
 
 export class ConfigService extends BaseConfigService {
   constructor() {

@@ -32,6 +32,10 @@ module.exports = {
             group: ['@app/common/*'],
             message: 'import from @app/common instead',
           },
+          {
+            group: ['@app/todos/*'],
+            message: 'import from @app/todos instead',
+          },
         ],
       },
     ],

@@ -55,6 +55,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/common/tsconfig.lib.json"
       }
+    },
+    "todos": {
+      "type": "library",
+      "root": "libs/todos",
+      "entryFile": "index",
+      "sourceRoot": "libs/todos/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/todos/tsconfig.lib.json"
+      }
     }
   }
 }

@@ -1,22 +1,13 @@
-import {
-  Controller,
-  HttpStatus,
-  UseFilters,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, HttpStatus } from '@nestjs/common';
 import { UserService } from './user.service';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import {
   CreateUserDto,
-  PrismaExceptionFilter,
   RmqCommands,
   RpcShared,
   StatusOnSuccess,
-  UnknownAsRpcExceptionFilter,
-  WrapResultInterceptor,
 } from '@app/common';
 
-@UseFilters(PrismaExceptionFilter)
 @RpcShared()
 @Controller()
 export class UserController {
@@ -36,14 +27,13 @@ export class UserController {
 
   @StatusOnSuccess(HttpStatus.OK)
   @MessagePattern(RmqCommands.user.checkCredentials)
-  async findOneByEmail(
+  async checkCredentials(
     @Payload('email') email: string,
     @Payload('password') password: string,
   ) {
     return await this.userService.checkCredentials(email, password);
   }
 
-  // @UseFilters(PrismaExceptionFilter)
   @StatusOnSuccess(HttpStatus.OK)
   @MessagePattern(RmqCommands.user.delete)
   async deleteUser(id: number) {

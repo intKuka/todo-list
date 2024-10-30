@@ -1,17 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigService } from './config/config.service';
 import { AuthModule } from './auth/auth.module';
-import { RabbitMqModule, UnknownAsRpcExceptionFilter } from '@app/common';
-import { APP_FILTER } from '@nestjs/core';
+import { RabbitMqModule } from '@app/common';
 
 @Module({
   imports: [RabbitMqModule, AuthModule],
-  providers: [
-    ConfigService,
-    {
-      provide: APP_FILTER,
-      useClass: UnknownAsRpcExceptionFilter,
-    },
-  ],
+  providers: [ConfigService],
 })
 export class AppModule {}

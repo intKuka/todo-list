@@ -1,13 +1,13 @@
-import { Global, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { RabbitMqModule } from '@app/common';
-import { UserService } from './user/user.service';
-import { AuthService } from './auth/auth.service';
-import { UserController } from './user/user.controller';
-import { AuthController } from './auth/auth.controller';
+import { AuthService } from './rpc-services/auth/auth.service';
+import { AuthController } from './rpc-services/auth/auth.controller';
 import { APP_FILTERS } from './global/filters.global';
 import { APP_GUARDS } from './global/guards.global';
 import { APP_INTERCEPTORS } from './global/interceptors.global';
 import { APP_PIPES } from './global/pipes.global';
+import { UserController } from './rpc-services/user/user.controller';
+import { UserService } from './rpc-services/user/user.service';
 
 @Module({
   imports: [

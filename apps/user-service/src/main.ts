@@ -2,7 +2,7 @@ require('dotenv').config('../.env');
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { RabbitMqService, UnknownAsRpcExceptionFilter } from '@app/common';
+import { RabbitMqService } from '@app/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);

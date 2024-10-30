@@ -1,5 +1,5 @@
 import { ArgumentsHost, Catch, HttpStatus } from '@nestjs/common';
-import { Observable, throwError } from 'rxjs';
+import { Observable } from 'rxjs';
 import { CustomBaseRpcExceptionFilter } from './base/custom-base-rcp-exception.filter';
 import { RpcExceptionMessage } from '../interfaces/rpc/rpc-exception-message.interface';
 

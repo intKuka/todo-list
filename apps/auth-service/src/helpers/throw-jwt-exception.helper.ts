@@ -1,5 +1,5 @@
 import { JsonWebTokenError, TokenExpiredError } from '@nestjs/jwt';
-import { CustomJsonWebTokenError } from '../exceptions/custom-json-web-token-error.exception';
+import { InvalidTokenSignature } from '../exceptions/invalid-token-signature.exception';
 import { TokenExpired } from '../exceptions/token-expired.exception';
 
 export const throwJwtException = (
@@ -8,7 +8,7 @@ export const throwJwtException = (
   if (err instanceof TokenExpiredError) {
     throw new TokenExpired(err.expiredAt);
   } else if (err instanceof JsonWebTokenError) {
-    throw new CustomJsonWebTokenError(err.message);
+    throw new InvalidTokenSignature();
   } else {
     throw err;
   }
